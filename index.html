@@ -7,6 +7,7 @@
     .entry { margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; }
   </style>
 </head>
+
 <body>
 
   <h2>Add a Show</h2>
@@ -38,6 +39,78 @@
 
   <h2>Your Shows</h2>
   <div id="showList"></div>
+
+
+
+<script type="module">
+  import { updateDoc, doc } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+async function updateShow(id, field, value) {
+  const ref = doc(db, "shows", id);
+  await updateDoc(ref, { [field]: value });
+  loadShows();
+}
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    // paste your config here
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.db = db; // make it accessible to your other scripts
+</script>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDnc816qshKUapfDk3HCv5NK9jGxNNDm_A",
+    authDomain: "deckedout-4cd13.firebaseapp.com",
+    projectId: "deckedout-4cd13",
+    storageBucket: "deckedout-4cd13.firebasestorage.app",
+    messagingSenderId: "620649552709",
+    appId: "1:620649552709:web:76173a26c794cf8751bc2c"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+
+<script type="module">
+  import { collection, addDoc } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  async function saveShow() {
+    const title = document.getElementById("title").value;
+    const rating = document.getElementById("rating").value;
+    const status = document.getElementById("status").value;
+
+    if (!title || !rating || !status) {
+      alert("Please fill out all fields");
+      return;
+    }
+
+    await addDoc(collection(db, "shows"), {
+      title,
+      rating,
+      status
+    });
+
+    loadShows();
+  }
+
+  window.saveShow = saveShow;
+</script>
 
 <script>
 function loadShows() {
@@ -86,6 +159,32 @@ function updateShow(index, field, value) {
   localStorage.setItem("shows", JSON.stringify(shows));
   loadShows(); // refresh the display
 }
+</script>
+
+<script type="module">
+  import { collection, getDocs } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  async function loadShows() {
+    const list = document.getElementById("showList");
+    list.innerHTML = "";
+
+    const querySnapshot = await getDocs(collection(db, "shows"));
+    querySnapshot.forEach((docSnap) => {
+      const show = docSnap.data();
+
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = `
+        <strong>${show.title}</strong><br>
+        Rating: ${show.rating}<br>
+        Status: ${show.status}<br>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  window.onload = loadShows;
 </script>
 
 
