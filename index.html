@@ -87,6 +87,26 @@
 .sort-buttons button:hover {
   background: #357ac9;
 }
+.sort-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sort-buttons button {
+  flex: 1;
+  background: #0B5227;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.sort-buttons button:hover {
+  background: #357ac9;
+}
+
 
 </style>
 </head>
@@ -130,12 +150,27 @@
   <button onclick="setSort('status')">Sort by Status</button>
 </div>
 
+<input 
+  type="text" 
+  id="searchInput" 
+  placeholder="Search by title..." 
+  oninput="loadShows()" 
+  style="margin-bottom: 15px;"
+>
+
   <div id="showList"></div>
 
 
 <!-- ⭐ FIREBASE + FIRESTORE -->
 <script type="module">
   
+  let currentSort = "title";
+
+window.setSort = function (type) {
+  currentSort = type;
+  loadShows();
+};
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
     getFirestore, collection, addDoc, getDocs, updateDoc, doc 
@@ -257,6 +292,7 @@ window.setSort = function (type) {
     list.appendChild(div);
   });
 }
+
 
   window.onload = loadShows;
 </script>
