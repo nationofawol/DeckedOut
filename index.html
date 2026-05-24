@@ -35,44 +35,20 @@
     <option>Plan to Watch</option>
   </select><br><br>
 
-  <button id="saveBtn">Save Show</button>
+  <button onclick="saveShow()">Save Show</button>
 
   <h2>Your Shows</h2>
   <div id="showList"></div>
 
 
-
+<!-- ⭐ FIREBASE + FIRESTORE -->
 <script type="module">
-  import { updateDoc, doc } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-async function updateShow(id, field, value) {
-  const ref = doc(db, "shows", id);
-  await updateDoc(ref, { [field]: value });
-  loadShows();
-}
-
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { 
+    getFirestore, collection, addDoc, getDocs, updateDoc, doc 
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    // paste your config here
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  window.db = db; // make it accessible to your other scripts
-</script>
-
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
+  // ⭐ Your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDnc816qshKUapfDk3HCv5NK9jGxNNDm_A",
     authDomain: "deckedout-4cd13.firebaseapp.com",
@@ -82,15 +58,13 @@ async function updateShow(id, field, value) {
     appId: "1:620649552709:web:76173a26c794cf8751bc2c"
   };
 
-  // Initialize Firebase
+  // ⭐ Initialize Firebase
   const app = initializeApp(firebaseConfig);
-</script>
+  const db = getFirestore(app);
 
-<script type="module">
-  import { collection, addDoc } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  async function saveShow() {
+  // ⭐ Save a new show
+  window.saveShow = async function () {
     const title = document.getElementById("title").value;
     const rating = document.getElementById("rating").value;
     const status = document.getElementById("status").value;
@@ -100,71 +74,20 @@ async function updateShow(id, field, value) {
       return;
     }
 
-    await addDoc(collection(db, "shows"), {
-      title,
-      rating,
-      status
-    });
-
+    await addDoc(collection(db, "shows"), { title, rating, status });
     loadShows();
-  }
+  };
 
-  window.saveShow = saveShow;
-</script>
 
-<script>
-function loadShows() {
-  const shows = JSON.parse(localStorage.getItem("shows")) || [];
-  const list = document.getElementById("showList");
-  list.innerHTML = "";
+  // ⭐ Update an existing show
+  window.updateShow = async function (id, field, value) {
+    const ref = doc(db, "shows", id);
+    await updateDoc(ref, { [field]: value });
+    loadShows();
+  };
 
-  shows.forEach((show, index) => {
-    const div = document.createElement("div");
-    div.className = "entry";
 
-    div.innerHTML = `
-      <strong>${show.title}</strong><br>
-
-      Rating:
-      <select onchange="updateShow(${index}, 'rating', this.value)">
-        <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
-        <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
-        <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
-        <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
-        <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
-      </select>
-      <br>
-
-      Status:
-      <select onchange="updateShow(${index}, 'status', this.value)">
-        <option ${show.status === "Watching" ? "selected" : ""}>Watching</option>
-        <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
-        <option ${show.status === "On Hold" ? "selected" : ""}>On Hold</option>
-        <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
-        <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
-      </select>
-      <br><br>
-
-      <button onclick="deleteShow(${index})">Delete</button>
-    `;
-
-    list.appendChild(div);
-  });
-}
-</script>
-<script>
-function updateShow(index, field, value) {
-  const shows = JSON.parse(localStorage.getItem("shows")) || [];
-  shows[index][field] = value;
-  localStorage.setItem("shows", JSON.stringify(shows));
-  loadShows(); // refresh the display
-}
-</script>
-
-<script type="module">
-  import { collection, getDocs } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+  // ⭐ Load all shows
   async function loadShows() {
     const list = document.getElementById("showList");
     list.innerHTML = "";
@@ -172,21 +95,40 @@ function updateShow(index, field, value) {
     const querySnapshot = await getDocs(collection(db, "shows"));
     querySnapshot.forEach((docSnap) => {
       const show = docSnap.data();
+      const id = docSnap.id;
 
       const div = document.createElement("div");
       div.className = "entry";
+
       div.innerHTML = `
         <strong>${show.title}</strong><br>
-        Rating: ${show.rating}<br>
-        Status: ${show.status}<br>
+
+        Rating:
+        <select onchange="updateShow('${id}', 'rating', this.value)">
+          <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
+          <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
+          <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
+          <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
+          <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
+        </select>
+        <br>
+
+        Status:
+        <select onchange="updateShow('${id}', 'status', this.value)">
+          <option ${show.status === "Watching" ? "selected" : ""}>Watching</option>
+          <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
+          <option ${show.status === "On Hold" ? "selected" : ""}>On Hold</option>
+          <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
+          <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
+        </select>
       `;
+
       list.appendChild(div);
     });
   }
 
   window.onload = loadShows;
 </script>
-
 
 </body>
 </html>
