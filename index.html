@@ -113,9 +113,9 @@
   <label>Status</label><br>
   <select id="status">
     <option value="">Select status</option>
-    <option>Watching</option>
+    <option>Watching and Waiting for New Season</option>
     <option>Completed</option>
-    <option>On Hold</option>
+    <option>Watching but Not Caught Up</option>
     <option>Dropped</option>
     <option>Plan to Watch</option>
   </select><br><br>
@@ -189,9 +189,9 @@ window.setSort = function (type) {
 
   // ⭐ Load all shows
    const statusEmojis = {
-   "Watching": "👀",
+   "Watching and Waiting for New Season": "👀",
    "Completed": "✅",
-    "On Hold": "⏸️",
+    "Watching but Not Caught Up": "⏸️",
     "Dropped": "❌",
     "Plan to Watch": "📅"
   };
@@ -222,7 +222,7 @@ window.setSort = function (type) {
   }
 
   if (currentSort === "status") {
-    const order = ["Watching", "On Hold", "Plan to Watch", "Completed", "Dropped"];
+    const order = ["Watching and Waiting for New Season", "Watching but Not Caught Up", "Plan to Watch", "Completed", "Dropped"];
     shows.sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
   }
 
@@ -246,9 +246,9 @@ window.setSort = function (type) {
 
       Status:
       <select onchange="updateShow('${show.id}', 'status', this.value)">
-        <option ${show.status === "Watching" ? "selected" : ""}>Watching</option>
+        <option ${show.status === "Watching and Waiting for New Season" ? "selected" : ""}>Watching and Waiting for New Season</option>
         <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
-        <option ${show.status === "On Hold" ? "selected" : ""}>On Hold</option>
+        <option ${show.status === "Watching but Not Caught Up" ? "selected" : ""}>Watching but Not Caught Up</option>
         <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
         <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
       </select>
