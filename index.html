@@ -92,6 +92,10 @@
   gap: 10px;
   margin-bottom: 20px;
 }
+.entry textarea {
+  background: #fffdf5;
+  border: 1px solid #e6dca8;
+}
 
 .sort-buttons button {
   flex: 1;
@@ -213,17 +217,25 @@ window.setSort = function (type) {
 };
 
 
-    await addDoc(collection(db, "shows"), { title, rating, status });
+    const notes = document.getElementById("notes").value;
+
+await addDoc(collection(db, "shows"), { 
+  title, 
+  rating, 
+  status,
+  notes: notes || "" 
+});
+
     loadShows();
   };
 
 
   // ⭐ Update an existing show
   window.updateShow = async function (id, field, value) {
-    const ref = doc(db, "shows", id);
-    await updateDoc(ref, { [field]: value });
-    loadShows();
-  };
+  await updateDoc(doc(db, "shows", id), { [field]: value });
+  loadShows();
+};
+
 
 
   // ⭐ Load all shows
@@ -272,40 +284,49 @@ window.setSort = function (type) {
     div.className = "entry";
 
     div.innerHTML = `
-      <strong>${show.title}</strong><br>
+  <strong>${show.title}</strong><br>
 
-      Rating:
-      <select onchange="updateShow('${show.id}', 'rating', this.value)">
-        <option ${show.rating === "Decker Rate this Show" ? "selected" : ""}>Select rating</option>
-        <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
-        <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
-        <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
-        <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
-        <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
-      </select>
-      <br>
+  Rating:
+  <select onchange="updateShow('${show.id}', 'rating', this.value)">
+    <option ${show.rating === "Decker Rate this Show" ? "selected" : ""}>Select rating</option>
+    <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
+    <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
+    <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
+    <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
+    <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
+  </select>
+  <br><br>
 
-      Status:
-      <select onchange="updateShow('${show.id}', 'status', this.value)">
-        <option ${show.status === "Watching and Waiting for New Season" ? "selected" : ""}>Watching and Waiting for New Season</option>
-        <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
-        <option ${show.status === "Watching but Not Caught Up" ? "selected" : ""}>Watching but Not Caught Up</option>
-        <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
-        <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
-      </select>
-      <br><br>
-        <button onclick="deleteShow('${show.id}')" style="
-        background:#b30000;
-        color:white;
-        padding:8px 12px;
-        border:none;
-        border-radius:6px;
-        cursor:pointer;
-">
-  Delete
-</button>
+  Status:
+  <select onchange="updateShow('${show.id}', 'status', this.value)">
+    <option ${show.status === "Watching and Waiting for New Season" ? "selected" : ""}>Watching and Waiting for New Season</option>
+    <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
+    <option ${show.status === "Watching but Not Caught Up" ? "selected" : ""}>Watching but Not Caught Up</option>
+    <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
+    <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
+  </select>
 
-    `;
+  <br><br>
+
+  <label><strong>Notes:</strong></label><br>
+  <textarea 
+    onchange="updateShow('${show.id}', 'notes', this.value)"
+    style="width:100%; height:80px; padding:10px; border-radius:6px; border:1px solid #ccc; font-size:14px;"
+  >${show.notes || ""}</textarea>
+
+  <br><br>
+
+  <button onclick="deleteShow('${show.id}')" style="
+    background:#b30000;
+    color:white;
+    padding:8px 12px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+  ">
+    Delete
+  </button>
+`;
 
 
     list.appendChild(div);
