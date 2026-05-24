@@ -51,6 +51,31 @@
     button:hover {
       background: #357ac9;
     }
+    
+.entry.watching-and-waiting-for-new-season {
+  border-left-color: #1e90ff; /* blue */
+  background: #e8f3ff;
+}
+
+.entry.watching-but-not-caught-up {
+  border-left-color: #ffb300; /* amber */
+  background: #fff4d6;
+}
+
+.entry.plan-to-watch {
+  border-left-color: #8e44ad; /* purple */
+  background: #f4e9fb;
+}
+
+.entry.completed {
+  border-left-color: #2ecc71; /* green */
+  background: #e9f9ef;
+}
+
+.entry.dropped {
+  border-left-color: #e74c3c; /* red */
+  background: #fdecea;
+}
 
     .entry {
       background: white;
@@ -235,7 +260,8 @@
     // RENDER
     shows.forEach((show) => {
       const div = document.createElement("div");
-      div.className = "entry";
+      div.className = "entry " + show.status.replaceAll(" ", "-").toLowerCase();
+
 
       div.innerHTML = `
         <strong>${show.title}</strong><br><br>
