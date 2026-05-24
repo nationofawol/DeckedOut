@@ -214,15 +214,17 @@ window.setSort = function (type) {
       return;
     }
 
-    window.deleteShow = async function(id) {
+    
+
+
+    const notes = document.getElementById("notes").value;
+
+window.deleteShow = async function(id) {
   if (!confirm("Are you sure you want to delete this show?")) return;
 
   await deleteDoc(doc(db, "shows", id));
   loadShows();
 };
-
-
-    const notes = document.getElementById("notes").value;
 
 await addDoc(collection(db, "shows"), { 
   title, 
@@ -339,9 +341,9 @@ await addDoc(collection(db, "shows"), {
         border:none;
         border-radius:6px;
         cursor:pointer;
-      ">
+        ">
         Delete
-      </button>
+        </button>
     `;
 
     list.appendChild(div);
