@@ -249,6 +249,7 @@ await addDoc(collection(db, "shows"), {
 
  async function loadShows() {
   const list = document.getElementById("showList");
+  const searchValue = document.getElementById("searchInput")?.value.toLowerCase() || "";
   list.innerHTML = "";
 
   const querySnapshot = await getDocs(collection(db, "shows"));
@@ -261,78 +262,86 @@ await addDoc(collection(db, "shows"), {
     });
   });
 
-  
-  // ⭐ Sorting logic
+  // ⭐ SEARCH FILTER
+  shows = shows.filter(show =>
+    show.title.toLowerCase().includes(searchValue)
+  );
+
+  // ⭐ SORTING
   if (currentSort === "title") {
     shows.sort((a, b) => a.title.localeCompare(b.title));
   }
 
   if (currentSort === "rating") {
-    // Extract the number from "⭐⭐⭐ 3"
     const getNum = (r) => parseInt(r.replace(/[^0-9]/g, ""));
     shows.sort((a, b) => getNum(b.rating) - getNum(a.rating));
   }
 
   if (currentSort === "status") {
-    const order = ["Watching and Waiting for New Season", "Watching but Not Caught Up", "Plan to Watch", "Completed", "Dropped"];
+    const order = [
+      "Watching and Waiting for New Season",
+      "Watching but Not Caught Up",
+      "Plan to Watch",
+      "Completed",
+      "Dropped"
+    ];
     shows.sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
   }
 
-  // ⭐ Render sorted list
+  // ⭐ RENDER
   shows.forEach((show) => {
     const div = document.createElement("div");
     div.className = "entry";
 
     div.innerHTML = `
-  <strong>${show.title}</strong><br>
+      <strong>${show.title}</strong><br><br>
 
-  Rating:
-  <select onchange="updateShow('${show.id}', 'rating', this.value)">
-    <option ${show.rating === "Decker Rate this Show" ? "selected" : ""}>Select rating</option>
-    <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
-    <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
-    <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
-    <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
-    <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
-  </select>
-  <br><br>
+      Rating:
+      <select onchange="updateShow('${show.id}', 'rating', this.value)">
+        <option>Select rating</option>
+        <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
+        <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
+        <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
+        <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
+        <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
+      </select>
 
-  Status:
-  <select onchange="updateShow('${show.id}', 'status', this.value)">
-    <option ${show.status === "Watching and Waiting for New Season" ? "selected" : ""}>Watching and Waiting for New Season</option>
-    <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
-    <option ${show.status === "Watching but Not Caught Up" ? "selected" : ""}>Watching but Not Caught Up</option>
-    <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
-    <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
-  </select>
+      <br><br>
 
-  <br><br>
+      Status:
+      <select onchange="updateShow('${show.id}', 'status', this.value)">
+        <option ${show.status === "Watching and Waiting for New Season" ? "selected" : ""}>Watching and Waiting for New Season</option>
+        <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
+        <option ${show.status === "Watching but Not Caught Up" ? "selected" : ""}>Watching but Not Caught Up</option>
+        <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
+        <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
+      </select>
 
-  <label><strong>Notes:</strong></label><br>
-  <textarea 
-    onchange="updateShow('${show.id}', 'notes', this.value)"
-    style="width:100%; height:80px; padding:10px; border-radius:6px; border:1px solid #ccc; font-size:14px;"
-  >${show.notes || ""}</textarea>
+      <br><br>
 
-  <br><br>
+      <label><strong>Notes:</strong></label><br>
+      <textarea 
+        onchange="updateShow('${show.id}', 'notes', this.value)"
+        style="width:100%; height:80px; padding:10px; border-radius:6px; border:1px solid #ccc; font-size:14px;"
+      >${show.notes || ""}</textarea>
 
-  <button onclick="deleteShow('${show.id}')" style="
-    background:#b30000;
-    color:white;
-    padding:8px 12px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-  ">
-    Delete
-  </button>
-`;
+      <br><br>
 
+      <button onclick="deleteShow('${show.id}')" style="
+        background:#b30000;
+        color:white;
+        padding:8px 12px;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+      ">
+        Delete
+      </button>
+    `;
 
     list.appendChild(div);
   });
 }
-
 
   window.onload = loadShows;
 </script>
