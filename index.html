@@ -67,6 +67,27 @@
     font-size: 18px;
     color: #0B5227;
   }
+
+  .sort-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sort-buttons button {
+  flex: 1;
+  background: #0B5227;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.sort-buttons button:hover {
+  background: #357ac9;
+}
+
 </style>
 </head>
 
@@ -102,6 +123,13 @@
   <button onclick="saveShow()">Save Show</button>
 
   <h2>Your Shows</h2>
+
+  <div class="sort-buttons">
+  <button onclick="setSort('title')">Sort by Title</button>
+  <button onclick="setSort('rating')">Sort by Rating</button>
+  <button onclick="setSort('status')">Sort by Status</button>
+</div>
+
   <div id="showList"></div>
 
 
@@ -114,6 +142,13 @@
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   // ⭐ Your Firebase config
+  let currentSort = "title";
+
+window.setSort = function (type) {
+  currentSort = type;
+  loadShows();
+};
+
   const firebaseConfig = {
     apiKey: "AIzaSyDnc816qshKUapfDk3HCv5NK9jGxNNDm_A",
     authDomain: "deckedout-4cd13.firebaseapp.com",
@@ -161,46 +196,67 @@
     "Plan to Watch": "📅"
   };
 
-  async function loadShows() {
-    const list = document.getElementById("showList");
-    list.innerHTML = "";
+ async function loadShows() {
+  const list = document.getElementById("showList");
+  list.innerHTML = "";
 
-    const querySnapshot = await getDocs(collection(db, "shows"));
-    querySnapshot.forEach((docSnap) => {
-      const show = docSnap.data();
-      const id = docSnap.id;
+  const querySnapshot = await getDocs(collection(db, "shows"));
+  let shows = [];
 
-      const div = document.createElement("div");
-      div.className = "entry";
-
-      div.innerHTML = `
-        <strong>${show.title}</strong><br>
-
-        Rating:
-        <select onchange="updateShow('${id}', 'rating', this.value)">
-          <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
-          <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
-          <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
-          <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
-          <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
-        </select>
-        <br>
-
-        Status:
-        <select onchange="updateShow('${id}', 'status', this.value)">
-          <option ${show.status === "Watching" ? "selected" : ""}>Watching</option>
-          <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
-          <option ${show.status === "On Hold" ? "selected" : ""}>On Hold</option>
-          <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
-          <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
-        </select>
-        <br>
-        Status: ${statusEmojis[show.status]} ${show.status}
-      `;
-
-      list.appendChild(div);
+  querySnapshot.forEach((docSnap) => {
+    shows.push({
+      id: docSnap.id,
+      ...docSnap.data()
     });
+  });
+
+  // ⭐ Sorting logic
+  if (currentSort === "title") {
+    shows.sort((a, b) => a.title.localeCompare(b.title));
   }
+
+  if (currentSort === "rating") {
+    // Extract the number from "⭐⭐⭐ 3"
+    const getNum = (r) => parseInt(r.replace(/[^0-9]/g, ""));
+    shows.sort((a, b) => getNum(b.rating) - getNum(a.rating));
+  }
+
+  if (currentSort === "status") {
+    const order = ["Watching", "On Hold", "Plan to Watch", "Completed", "Dropped"];
+    shows.sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+  }
+
+  // ⭐ Render sorted list
+  shows.forEach((show) => {
+    const div = document.createElement("div");
+    div.className = "entry";
+
+    div.innerHTML = `
+      <strong>${show.title}</strong><br>
+
+      Rating:
+      <select onchange="updateShow('${show.id}', 'rating', this.value)">
+        <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
+        <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
+        <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
+        <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
+        <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
+      </select>
+      <br>
+
+      Status:
+      <select onchange="updateShow('${show.id}', 'status', this.value)">
+        <option ${show.status === "Watching" ? "selected" : ""}>Watching</option>
+        <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
+        <option ${show.status === "On Hold" ? "selected" : ""}>On Hold</option>
+        <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
+        <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
+      </select>
+    `;
+
+    list.appendChild(div);
+  });
+}
 
   window.onload = loadShows;
 </script>
