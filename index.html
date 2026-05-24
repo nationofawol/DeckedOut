@@ -99,6 +99,7 @@
   <label>Rating</label>
   <select id="rating">
     <option value="">Select rating</option>
+    <option>Decker Pick!</option>
     <option>⭐ 1</option>
     <option>⭐⭐ 2</option>
     <option>⭐⭐⭐ 3</option>
@@ -242,6 +243,7 @@
         Rating:
         <select onchange="updateShow('${show.id}', 'rating', this.value)">
           <option>Select rating</option>
+          <option ${show.rating === "Decker Pick!" ? "selected" : ""}>Decker Pick!</option>
           <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
           <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
           <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
