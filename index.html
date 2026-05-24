@@ -6,15 +6,71 @@
 <link rel="preconnect" href="https://gstatic.com" crossorigin>
 <link href="https://googleapis.com" rel="stylesheet">
   <title>Decker's Anime Watchlist</title>
+
   <style>
-    /* Apply to the whole page */
-    body { font-family: 'Josefin Sans', sans-serif; padding: 20px solid #0B5227; }
-    .entry { margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; }
-  </style>
+  body {
+    font-family: 'Josefin Sans', sans-serif;
+    background: #FFD966;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .page-container {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  h2 {
+    text-align: center;
+    color: #0B5227;
+    margin-bottom: 20px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #FFFFFF;
+    font-size: 16px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #0B5227;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background: #357ac9;
+  }
+
+  .entry {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border-left: 6px solid #0B5227;
+  }
+
+  .entry strong {
+    font-size: 18px;
+    color: #0B5227;
+  }
+</style>
 </head>
 
 <body>
-  
+  <div class="page-container">
+
 
   <h2>Add a Show</h2>
 
@@ -146,6 +202,6 @@
 
   window.onload = loadShows;
 </script>
-
+</div>
 </body>
 </html>
