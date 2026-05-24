@@ -88,6 +88,14 @@
 
 
   // ⭐ Load all shows
+   const statusEmojis = {
+   "Watching": "👀",
+   "Completed": "✅",
+    "On Hold": "⏸️",
+    "Dropped": "❌",
+    "Plan to Watch": "📅"
+  };
+
   async function loadShows() {
     const list = document.getElementById("showList");
     list.innerHTML = "";
@@ -121,6 +129,8 @@
           <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
           <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
         </select>
+        <br>
+        Status: ${statusEmojis[show.status]} ${show.status}
       `;
 
       list.appendChild(div);
