@@ -40,56 +40,54 @@
   <div id="showList"></div>
 
 <script>
-  function loadShows() {
-    const shows = JSON.parse(localStorage.getItem("shows")) || [];
-    const list = document.getElementById("showList");
-    list.innerHTML = "";
+function loadShows() {
+  const shows = JSON.parse(localStorage.getItem("shows")) || [];
+  const list = document.getElementById("showList");
+  list.innerHTML = "";
 
-    shows.forEach((show, index) => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = `
-        <strong>${show.title}</strong><br>
-        Rating: ${show.rating}<br>
-        Status: ${show.status}<br>
-        <button onclick="deleteShow(${index})">Delete</button>
-      `;
-      list.appendChild(div);
-    });
-  }
+  shows.forEach((show, index) => {
+    const div = document.createElement("div");
+    div.className = "entry";
 
-  function saveShow() {
-    const title = document.getElementById("title").value;
-    const rating = document.getElementById("rating").value;
-    const status = document.getElementById("status").value;
+    div.innerHTML = `
+      <strong>${show.title}</strong><br>
 
-    if (!title || !rating || !status) {
-      alert("Please fill out all fields");
-      return;
-    }
+      Rating:
+      <select onchange="updateShow(${index}, 'rating', this.value)">
+        <option ${show.rating === "⭐ 1" ? "selected" : ""}>⭐ 1</option>
+        <option ${show.rating === "⭐⭐ 2" ? "selected" : ""}>⭐⭐ 2</option>
+        <option ${show.rating === "⭐⭐⭐ 3" ? "selected" : ""}>⭐⭐⭐ 3</option>
+        <option ${show.rating === "⭐⭐⭐⭐ 4" ? "selected" : ""}>⭐⭐⭐⭐ 4</option>
+        <option ${show.rating === "⭐⭐⭐⭐⭐ 5" ? "selected" : ""}>⭐⭐⭐⭐⭐ 5</option>
+      </select>
+      <br>
 
-    const shows = JSON.parse(localStorage.getItem("shows")) || [];
-    shows.push({ title, rating, status });
-    localStorage.setItem("shows", JSON.stringify(shows));
+      Status:
+      <select onchange="updateShow(${index}, 'status', this.value)">
+        <option ${show.status === "Watching" ? "selected" : ""}>Watching</option>
+        <option ${show.status === "Completed" ? "selected" : ""}>Completed</option>
+        <option ${show.status === "On Hold" ? "selected" : ""}>On Hold</option>
+        <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
+        <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
+      </select>
+      <br><br>
 
-    document.getElementById("title").value = "";
-    document.getElementById("rating").value = "";
-    document.getElementById("status").value = "";
+      <button onclick="deleteShow(${index})">Delete</button>
+    `;
 
-    loadShows();
-  }
-
-  function deleteShow(index) {
-    const shows = JSON.parse(localStorage.getItem("shows")) || [];
-    shows.splice(index, 1);
-    localStorage.setItem("shows", JSON.stringify(shows));
-    loadShows();
-  }
-
-  document.getElementById("saveBtn").addEventListener("click", saveShow);
-
-  loadShows();
+    list.appendChild(div);
+  });
+}
 </script>
+<script>
+function updateShow(index, field, value) {
+  const shows = JSON.parse(localStorage.getItem("shows")) || [];
+  shows[index][field] = value;
+  localStorage.setItem("shows", JSON.stringify(shows));
+  loadShows(); // refresh the display
+}
+</script>
+
 
 </body>
 </html>
