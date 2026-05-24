@@ -293,18 +293,20 @@ window.setSort = function (type) {
         <option ${show.status === "Dropped" ? "selected" : ""}>Dropped</option>
         <option ${show.status === "Plan to Watch" ? "selected" : ""}>Plan to Watch</option>
       </select>
-    `;
-<br><br>
-<button onclick="deleteShow('${show.id}')" style="
-  background:#b30000;
-  color:white;
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
+      <br><br>
+        <button onclick="deleteShow('${show.id}')" style="
+        background:#b30000;
+        color:white;
+        padding:8px 12px;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
 ">
   Delete
 </button>
+
+    `;
+
 
     list.appendChild(div);
   });
