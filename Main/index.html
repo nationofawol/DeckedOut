@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Decker's Anime Watchlist</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .entry { margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+  <h2>Add a Show</h2>
+
+  <label>Show Title</label><br>
+  <input type="text" id="title" placeholder="Enter show title"><br><br>
+
+  <label>Rating</label><br>
+  <select id="rating">
+    <option value="">Select rating</option>
+    <option>⭐ 1</option>
+    <option>⭐⭐ 2</option>
+    <option>⭐⭐⭐ 3</option>
+    <option>⭐⭐⭐⭐ 4</option>
+    <option>⭐⭐⭐⭐⭐ 5</option>
+  </select><br><br>
+
+  <label>Status</label><br>
+  <select id="status">
+    <option value="">Select status</option>
+    <option>Watching</option>
+    <option>Completed</option>
+    <option>On Hold</option>
+    <option>Dropped</option>
+    <option>Plan to Watch</option>
+  </select><br><br>
+
+  <button id="saveBtn">Save Show</button>
+
+  <h2>Your Shows</h2>
+  <div id="showList"></div>
+
+<script>
+  function loadShows() {
+    const shows = JSON.parse(localStorage.getItem("shows")) || [];
+    const list = document.getElementById("showList");
+    list.innerHTML = "";
+
+    shows.forEach((show, index) => {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = `
+        <strong>${show.title}</strong><br>
+        Rating: ${show.rating}<br>
+        Status: ${show.status}<br>
+        <button onclick="deleteShow(${index})">Delete</button>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function saveShow() {
+    const title = document.getElementById("title").value;
+    const rating = document.getElementById("rating").value;
+    const status = document.getElementById("status").value;
+
+    if (!title || !rating || !status) {
+      alert("Please fill out all fields");
+      return;
+    }
+
+    const shows = JSON.parse(localStorage.getItem("shows")) || [];
+    shows.push({ title, rating, status });
+    localStorage.setItem("shows", JSON.stringify(shows));
+
+    document.getElementById("title").value = "";
+    document.getElementById("rating").value = "";
+    document.getElementById("status").value = "";
+
+    loadShows();
+  }
+
+  function deleteShow(index) {
+    const shows = JSON.parse(localStorage.getItem("shows")) || [];
+    shows.splice(index, 1);
+    localStorage.setItem("shows", JSON.stringify(shows));
+    loadShows();
+  }
+
+  document.getElementById("saveBtn").addEventListener("click", saveShow);
+
+  loadShows();
+</script>
+
+</body>
+</html>
